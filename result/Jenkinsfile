@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    
+    tools {
+      npm 'NodeJS 8.9.0'
+    }
+
+    stages {
+        stage('Build') {
+            echo 'Compiling voting app'
+            dir('result') {
+                npm install
+            }
+        }
+
+        stage('Test') {
+            echo 'Testing voting app'
+            dir('result') {
+                npm install
+                npm test
+            }
+        }
+
+        
+    }
+}
