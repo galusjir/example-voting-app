@@ -7,17 +7,21 @@ pipeline {
 
     stages {
         stage('Build') {
-            echo 'Compiling voting app'
-            dir('result') {
-                npm install
+            steps {
+                echo 'Compiling voting app'
+                dir('result') {
+                    npm install
+                }
             }
         }
 
         stage('Test') {
-            echo 'Testing voting app'
-            dir('result') {
-                npm install
-                npm test
+            steps {
+                echo 'Testing voting app'
+                dir('result') {
+                    npm install
+                    npm test
+                }
             }
         }
 
