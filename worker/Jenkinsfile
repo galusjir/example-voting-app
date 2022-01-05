@@ -39,9 +39,6 @@ pipeline {
                 }
             }
         }
-
-        package  package -DSkipTests
-
         
     }
 }
