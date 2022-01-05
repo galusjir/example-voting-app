@@ -10,7 +10,7 @@ pipeline {
             steps {
                 echo 'Compiling voting app'
                 dir('result') {
-                    npm install
+                    sh 'npm install' 
                 }
             }
         }
@@ -19,8 +19,8 @@ pipeline {
             steps {
                 echo 'Testing voting app'
                 dir('result') {
-                    npm install
-                    npm test
+                    sh 'npm install'
+                    sh 'npm test'
                 }
             }
         }
