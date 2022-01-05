@@ -1,0 +1,46 @@
+pipeline {
+    agent {
+        docker 'maven:3.6.1-jdk-8-alpine'
+    }
+
+    stages {
+        stage('Build') {
+            when {
+                changeset '**/worker/*'
+            }
+            steps {
+                echo 'Compiling worker app'
+                dir('worker') {
+                    sh 'mvn compile' 
+                }
+            }
+        }
+        stage('Test') {
+            when {
+                changeset '**/worker/*'
+            }
+            steps {
+                echo 'Testing the worker'
+                dir('worker') {
+                    sh 'mvn clean test' 
+                }
+            }
+        }
+        
+        stage('PAckage') {
+            when {
+                changeset '**/worker/*'
+            }
+            steps {
+                echo 'Packaging the project'
+                dir('worker') {
+                    sh 'mvn package -DSkipTests' 
+                }
+            }
+        }
+
+        package  package -DSkipTests
+
+        
+    }
+}
