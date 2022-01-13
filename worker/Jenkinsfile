@@ -57,12 +57,14 @@ pipeline {
         }
 
         stage('Docker-Package') {
+            agent any
             steps {
-                docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
-                    def image = docker.build("galusjir/worker:${env.BUILD_ID}", "worker")
-                    image.push()
+                script {
+                    docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
+                        def image = docker.build("galusjir/worker:${env.BUILD_ID}", "worker")
+                        image.push()
+                    }
                 }
-
                 
             }
         }
