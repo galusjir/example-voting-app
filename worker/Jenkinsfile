@@ -57,17 +57,12 @@ pipeline {
         }
 
         stage('Docker-Package') {
-            
-            docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token"){
-                def image = docker.build("galusjir/worker:${env.BUILD_ID}", "worker")
-                image.push()
-            }
-
-
             steps {
-                echo 'Packaging the project'
-                dir('worker') {
-                    sh 'mvn package -DSkipTests' 
+                    docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
+                        def image = docker.build("galusjir/worker:${env.BUILD_ID}", "worker")
+                        image.push()
+                    }
+
                 }
             }
         }
