@@ -1,14 +1,15 @@
 pipeline {
-    agent {
-       docker {
-         image 'python:2.7.16-slim'
-         args '--user root'
-       }
-    }
+    agent any
 
 
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'python:2.7.16-slim'
+                    args '--user root'
+                }
+            }
             when {
                 changeset '**/vote/*'
             }
@@ -21,6 +22,12 @@ pipeline {
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'python:2.7.16-slim'
+                    args '--user root'
+                }
+            }            
             when {
                 changeset '**/vote/*'
             }
@@ -33,6 +40,24 @@ pipeline {
             }
         }
 
+        stage('Package-container') {
+            agent any
+
+            when {
+                changeset '**/vote/*'
+            }
+            
+            steps {
+                echo 'Building Vote container'
+                script {
+                    docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
+                        def image = docker.build("galusjir/vote:${env.BUILD_ID}", "vote")
+                        image.push()
+                    }
+                }
+                
+            }
+        }
         
     }
 }
