@@ -45,6 +45,7 @@ pipeline {
             
             when {
                 changeset '**/result/*.js'
+                changeRequest target: 'master'
             }
             
             steps {

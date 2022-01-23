@@ -58,6 +58,10 @@ pipeline {
 
         stage('Docker-Package') {
             agent any
+            when {
+              changeset '**/worker/*'
+              changeRequest target: 'master'
+            }
             steps {
                 script {
                     docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
