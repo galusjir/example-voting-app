@@ -46,6 +46,7 @@ pipeline {
 
             when {
                 changeset '**/vote/*'
+		changeRequest target: 'master'
             }
             
             steps {
