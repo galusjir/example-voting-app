@@ -1,14 +1,14 @@
 pipeline {
-    
-    agent {
-        docker {
-          image   'maven:3.6.1-jdk-8-alpine'
-          args    '-v $HOME/.m2:/root/.m2'
-        }
-    }
+    agent any
 
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image   'maven:3.6.1-jdk-8-alpine'
+                    args    '-v $HOME/.m2:/root/.m2'
+                }
+            }
             when {
                 changeset '**/worker/*'
             }
@@ -20,6 +20,12 @@ pipeline {
             }
         }
         stage('Test') {
+            agent {
+                docker {
+                    image   'maven:3.6.1-jdk-8-alpine'
+                    args    '-v $HOME/.m2:/root/.m2'
+                }
+            }
             when {
                 changeset '**/worker/*'
             }
@@ -32,6 +38,13 @@ pipeline {
         }
         
         stage('PAckage') {
+            agent {
+                docker {
+                    image   'maven:3.6.1-jdk-8-alpine'
+                    args    '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            
             when {
                 changeset '**/worker/*'
             }
@@ -40,6 +53,23 @@ pipeline {
                 dir('worker') {
                     sh 'mvn package -DSkipTests' 
                 }
+            }
+        }
+
+        stage('Docker-Package') {
+            agent any
+            when {
+              changeset '**/worker/*'
+              changeRequest target: 'master'
+            }
+            steps {
+                script {
+                    docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
+                        def image = docker.build("galusjir/worker:${env.BUILD_ID}", "worker")
+                        image.push()
+                    }
+                }
+                
             }
         }
         

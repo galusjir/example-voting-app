@@ -1,14 +1,15 @@
 pipeline {
     agent any
 
-    tools {
-      nodejs 'NodeJS 8.9.0'
-    }
-
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'node:8.16.0-alpine'
+                }
+            }
             when {
-                changeset '**/result/*.js'
+                changeset '**/result/*'
             }
             steps {
                 echo 'Compiling voting app'
@@ -19,6 +20,12 @@ pipeline {
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'node:8.16.0-alpine'
+                }
+            }
+
             when {
                 changeset '**/result/*.js'
             }
@@ -32,6 +39,23 @@ pipeline {
             }
         }
 
-        
+
+        stage('Package-container') {
+            agent any
+            
+            when {
+                changeset '**/result/*.js'
+                changeRequest target: 'master'
+            }
+            
+            steps {
+                script {
+                    docker.withRegistry("https://registry.hub.docker.com/v1/","dockerhub_token") {
+                        def image = docker.build("galusjir/result:${env.BUILD_ID}", "result")
+                        image.push()
+                    }
+                }
+            }
+        }     
     }
 }
