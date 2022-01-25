@@ -200,10 +200,7 @@ pipeline {
 // And If all is good, then you can docker compose everything up
         stage("Deliver to dev") {
             agent any
-            when{
-                // When at least 1 container was created
-            }
-            script {
+            steps{
                 sh 'docker-compose up -d'
             }
         }
