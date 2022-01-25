@@ -1,0 +1,51 @@
+version: '3.7'
+
+volumes:
+  db-data2:
+
+networks:
+    instavote:
+        driver: bridge
+
+services:
+    vote:
+        image: galusjir/vote:10
+        ports:
+            - 50002:80
+        networks:
+            - instavote
+        depends_on:
+            - redis
+    
+    result:
+        image: galusjir/result:6
+        ports:
+            - 50001:4000
+        networks:
+            - instavote
+        depends_on:
+            - db
+    
+    
+    worker:
+        image: galusjir/worker:6
+        networks:
+            - instavote
+        depends_on:
+            - redis
+            - db
+    
+    
+    db:
+        image: postgres:9.6-alpine
+        networks:
+            - instavote
+        environment:
+            - POSTGRES_HOST_AUTH_METHOD=trust
+        volumes:
+            - "db-data2:/var/lib/postgresql/data"
+    
+    redis:
+        image: redis:alpine
+        networks:
+            - instavote

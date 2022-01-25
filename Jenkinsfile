@@ -201,6 +201,7 @@ pipeline {
         stage("Deliver to dev") {
             agent any
             steps{
+                sh 'ls -la'
                 sh 'docker-compose up -d'
             }
         }
